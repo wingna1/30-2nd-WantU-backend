@@ -9,7 +9,7 @@ class JobCategory(models.Model):
 
 class JobPosition(models.Model):
     title        = models.CharField(max_length=50)
-    content      = models.TextField
+    content      = models.TextField()
     due_date     = models.DateField()
     job_category = models.ForeignKey("JobCategory", on_delete=models.CASCADE)
     company      = models.ForeignKey("Company", on_delete=models.CASCADE)
