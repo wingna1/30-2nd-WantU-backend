@@ -37,12 +37,15 @@ class ResumeUploadView(View):
         except KeyError:
             return JsonResponse({'message':"Key error"}, status=400)
 
-        return JsonResponse({"message":"upload succeed"}, status=200)
+        return JsonResponse({"message":"upload success"}, status=201)
 
 class ResumeDownloadView(View):
     @login_decorator
     def get(self,request,resume_pk):
+        try:    
+            url  = Resume.objects.get(id= resume_pk).file_url
 
-        url  = Resume.objects.get(id= resume_pk).file_url
+            return JsonResponse({"message":url}, status=200)
 
-        return JsonResponse({"message":url}, status=200)
+        except Resume.DoesNotExist:
+            return JsonResponse({'message':"Invalid resume_pk"}, status=404)
