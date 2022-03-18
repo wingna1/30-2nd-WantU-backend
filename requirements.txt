@@ -1,3 +1,7 @@
 Django==4.0.3
 django-cors-headers==3.11.0
 mysqlclient==2.1.0
+boto3==1.21.19
+django-storages==1.12.3
+PyJWT==2.3.0
+requests==2.27.1
