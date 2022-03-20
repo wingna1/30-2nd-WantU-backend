@@ -13,5 +13,6 @@ class Resume(TimeStampModel):
     user       = models.ForeignKey(User, on_delete= models.CASCADE)
     is_deleted = models.BooleanField(default=False)
     deleted_at = models.DateTimeField(null=True)
+
     class Meta:
         db_table = "resumes"
