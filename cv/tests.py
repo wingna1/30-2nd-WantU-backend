@@ -1,4 +1,4 @@
-import jwt
+import jwt, uuid
 
 from django.test                    import TestCase, Client
 from django.core.files.uploadedfile import  SimpleUploadedFile
@@ -8,7 +8,7 @@ from .models                        import Resume
 from my_settings import SECRET_KEY, ALGORITHM
 
 # Create your tests here.
-class ResumeUploadView(TestCase):
+class ResumeUploadViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create(
@@ -62,7 +62,7 @@ class ResumeUploadView(TestCase):
 
         self.assertEqual(response.status_code, 400)
 
-class ResumeDownloadView(TestCase):
+class ResumeInfoViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create(
@@ -75,19 +75,31 @@ class ResumeDownloadView(TestCase):
         cls.header   = {'HTTP_Authorization' : cls.token}
         cls.payload  = jwt.decode(cls.token, SECRET_KEY, algorithms = ALGORITHM)
 
-        cls.resume = Resume.objects.create(
-            id       = 1,
-            name     = "test",
-            file_url = "www.test.com",
-            user     = cls.user
-        )
+        cls.resume_list = [
+            Resume(
+                id       = 1,
+                name     = "test1",
+                file_url = "www.test1.com",
+                user     = cls.user,
+                uuid     = str(uuid.uuid4())
+            ),
+            Resume(
+                id       = 2,
+                name     = "test2",
+                file_url = "www.test2.com",
+                user     = cls.user,
+                uuid     = str(uuid.uuid4())
+            )
+        ]
+
+        cls.resume = Resume.objects.bulk_create(cls.resume_list)
 
     def test_success_download_resume_from_wantu_get(self):
         client   = Client()
 
         response = client.get('/cv/1',  **self.header)
         
-        self.assertEqual(response.json(),{"message":"www.test.com"})
+        self.assertEqual(response.json(),{"message":"www.test1.com"})
 
         self.assertEqual(response.status_code, 200)
 
@@ -99,6 +111,107 @@ class ResumeDownloadView(TestCase):
             self.assertEqual(response.json(),{'message': 'Invalid resume_pk'})
 
             self.assertEqual(response.status_code, 404) 
+
+    def test_success_change_resume_name_in_wantu_patch(self):
+            client = Client()
+
+            data = {
+                "name":"이름변경"
+            }
+
+            response = client.patch('/cv/1',  data=data, content_type='application/json',**self.header)
+
+            self.assertEqual(response.status_code, 201)
+
+    def test_fail_changing_resume_name_dueto_invalid_resume_pk(self):
+        client = Client()
+        
+        data = {
+            "name":"이름변경"
+        }
+
+        response = client.patch('/cv/5',  data=data, content_type='application/json',**self.header)
+
+        self.assertEqual(response.json(), {'message': 'Invalid resume_pk'})
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_fail_changing_resume_name_dueto_keyerror(self):
+        client = Client()
+        
+        data = {
+            'na2me':'이름변경'
+        }
+
+        response = client.patch('/cv/1',  data=data, content_type='application/json',**self.header)
+
+        self.assertEqual(response.json(), {"message":"Key Error"})
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_success_delete_resume_delete(self):
+        client = Client()
+
+        response = client.delete('/cv/1', **self.header)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_fail_delete_resume_dueto_invalid_resume_pk(self):
+        client = Client()
+
+        response = client.delete('/cv/5', **self.header)      
+
+        self.assertEqual(response.json(), {'message':'Invalid resume_pk'})
+
+        self.assertEqual(response.status_code, 404)
+
+class ResumeListViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+            cls.user = User.objects.create(
+                id                = 1,
+                kakao_nickname    = "testman",
+                kakao_id          = 12345678,
+                profile_image_url = "www.test.1"
+                ) 
+            cls.token    = jwt.encode({'id' :User.objects.get(id=1).id}, SECRET_KEY, algorithm = ALGORITHM)
+            cls.header   = {'HTTP_Authorization' : cls.token}
+            cls.payload  = jwt.decode(cls.token, SECRET_KEY, algorithms = ALGORITHM)
+
+
+            cls.resume_list = [
+                Resume(
+                    id      = 1,
+                    name    = "test1",
+                    file_url= "www.test1.com",
+                    user    = cls.user,
+                    uuid    = str(uuid.uuid4())
+                ),
+                Resume(
+                    id      =2,
+                    name    = "test2",
+                    file_url= "www.test2.com",
+                    user    = cls.user,
+                    uuid    = str(uuid.uuid4())
+                )
+            ]
+
+            cls.resumes = Resume.objects.bulk_create(cls.resume_list)
+
+    def test_success_displaying_resume_list_get(self):
+        client = Client()
+    
+        response = client.get('/cv/list', **self.header)
+        
+        result = [{
+            "id"          : resume.id,
+            "name"        : resume.name,
+            "created_date": resume.created_at.strftime('%Y.%m.%d')
+        } for resume in self.resumes ]
+
+        self.assertEqual(response.json(), {'result':result})
+
+        self.assertEqual(response.status_code, 200)
 
 
 
