@@ -39,7 +39,7 @@ class KakaoLoginTest(TestCase):
                 }
         mocked_requests.get = MagicMock(return_value = MockedResponse())
 
-        headers  = {"HTTP_access_token":"fakeTokenforTest"}
+        headers  = {"HTTP_Authorization":"fakeTokenforTest"}
         response = client.get("/users/kakao/login", **headers)
 
         response_token = response.json()["results"]["token"]
@@ -91,7 +91,7 @@ class KakaoLoginTest(TestCase):
                 }
         mocked_requests.get = MagicMock(return_value = MockedResponse())
         
-        headers  = {"HTTP_access_token":"fakeTokenforTest"}
+        headers  = {"HTTP_Authorization":"fakeTokenforTest"}
         response = client.get("/users/kakao/login", **headers)
 
         self.assertEqual(response.status_code, 400)
@@ -115,7 +115,7 @@ class KakaoLoginTest(TestCase):
                 }
         mocked_requests.get = MagicMock(return_value = MockedResponse())
         
-        headers  = {"HTTP_access_token":"fakeTokenforTest"}
+        headers  = {"HTTP_Authorization":"fakeTokenforTest"}
         response = client.get("/users/kakao/login", **headers)
 
         self.assertEqual(response.status_code, 400)
@@ -139,7 +139,7 @@ class KakaoLoginTest(TestCase):
                 }
         mocked_requests.get = MagicMock(return_value = MockedResponse())
 
-        headers  = {"HTTP_access_token":"fakeTokenforTest"}
+        headers  = {"HTTP_Authorization":"fakeTokenforTest"}
         response = client.get("/users/kakao/login", **headers)
 
         response_token = response.json()["results"]["token"]
