@@ -1,6 +1,6 @@
 # 원티드 Proejct
 
-<img src="" width="100" height="100">  
+![image](https://user-images.githubusercontent.com/60123530/160071116-4ae9642a-edf8-4fc5-be4c-6eec0620a02e.png)
 
 ## 프로젝트 소개
 
@@ -22,7 +22,7 @@
 
 ### DB modeling
 
-<img src="" width="1200" height="700">
+![image](https://user-images.githubusercontent.com/60123530/160071035-f963edc5-1b8b-4d64-bc86-b2cf387e5d8a.png)
 
 ## 적용 기술 및 구현 기능
 
