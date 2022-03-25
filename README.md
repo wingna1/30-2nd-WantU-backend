@@ -1,4 +1,4 @@
-# 원티드 Proejct
+# 원티드 Project
 
 ![image](https://user-images.githubusercontent.com/60123530/160071116-4ae9642a-edf8-4fc5-be4c-6eec0620a02e.png)
 
